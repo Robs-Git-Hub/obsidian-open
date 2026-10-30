@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Open in Obsidian</title>
+<style>
+  :root { --bg: #ffffff; --fg: #1f1f1f; --muted: #666; --accent: #7c3aed; --accent-fg: #fff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1e1e1e; --fg: #e8e8e8; --muted: #aaa; --accent: #a78bfa; --accent-fg: #111; }
+  }
+  body { margin: 0; padding: 32px 16px; background: var(--bg); color: var(--fg);
+         font: 17px/1.5 system-ui, -apple-system, sans-serif; text-align: center; }
+  h1 { font-size: 1.2rem; font-weight: 600; margin: 0 0 4px; word-break: break-word; }
+  p { color: var(--muted); margin: 0 0 24px; word-break: break-word; }
+  a.button { display: inline-block; padding: 14px 28px; border-radius: 10px;
+             background: var(--accent); color: var(--accent-fg); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1 id="note">Opening Obsidian…</h1>
+<p id="vault"></p>
+<a class="button" id="open" href="#">Open in Obsidian</a>
+<script>
+  // Link format: https://…/obsidian-open/#vault=<vault>&file=<path in vault>
+  // The part after # never leaves the phone, so GitHub never sees vault or note names.
+  var params = new URLSearchParams(location.hash.slice(1));
+  var vault = params.get("vault");
+  var file = params.get("file");
+  var button = document.getElementById("open");
+  if (!vault) {
+    document.getElementById("note").textContent = "No note given";
+    button.style.display = "none";
+  } else {
+    var query = "vault=" + encodeURIComponent(vault) + (file ? "&file=" + encodeURIComponent(file) : "");
+    var target = "obsidian://open?" + query;
+    if (/Android/i.test(navigator.userAgent)) {
+      // Chrome on Android opens other apps more reliably with an intent link.
+      target = "intent://open?" + query + "#Intent;scheme=obsidian;package=md.obsidian;end";
+    }
+    document.getElementById("note").textContent = file ? file.split("/").pop().replace(/\.md$/, "") : vault;
+    document.getElementById("vault").textContent = "in " + vault;
+    button.href = target;
+    location.href = target;
+  }
+</script>
+</body>
+</html>
